@@ -1,0 +1,17 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<a href="MicrosoftIdentity/Account/SignIn/AzureAd">Login with Azure AD Account</a>
+<br />
+<a href="MicrosoftIdentity/Account/SignIn/AzureAdB2C">Login with Azure AD B2C Account</a>
+<br />
+<br />
+Current User IsAuthenticated: <b>@User?.Identity?.IsAuthenticated</b>
