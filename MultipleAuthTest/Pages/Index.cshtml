@@ -1,5 +1,6 @@
 ﻿@page
 @model IndexModel
+@attribute [Microsoft.AspNetCore.Authorization.AllowAnonymous]
 @{
     ViewData["Title"] = "Home page";
 }
@@ -12,6 +13,9 @@
 <a href="MicrosoftIdentity/Account/SignIn/AzureAd">Login with Azure AD Account</a>
 <br />
 <a href="MicrosoftIdentity/Account/SignIn/AzureAdB2C">Login with Azure AD B2C Account</a>
+<br />
+<br />
+Current User: <b>@User?.Identity?.Name</b>
 <br />
 <br />
 Current User IsAuthenticated: <b>@User?.Identity?.IsAuthenticated</b>

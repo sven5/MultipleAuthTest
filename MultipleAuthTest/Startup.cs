@@ -1,10 +1,16 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using System;
 
 namespace MultipleAuthTest
 {
@@ -20,14 +26,27 @@ namespace MultipleAuthTest
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication()
-                    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"), Constants.AzureAd);
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+            {
+                options.ExpireTimeSpan = new TimeSpan(7, 0, 0, 0);
+            });
 
             services.AddAuthentication()
-                    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAdB2C"), Constants.AzureAdB2C, "cookiesB2C");
+                    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"), Microsoft.Identity.Web.Constants.AzureAd, null);
 
-            services.AddControllersWithViews()
-                .AddMicrosoftIdentityUI();
+            services.AddAuthentication()
+                    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAdB2C"), Microsoft.Identity.Web.Constants.AzureAdB2C, null);
+
+            services.AddControllersWithViews(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+                options.Filters.Add(new AuthorizeFilter(policy));
+            }).AddMicrosoftIdentityUI();
+
+            //services.AddControllersWithViews()
+            //    .AddMicrosoftIdentityUI();
 
             services.AddRazorPages();
         }
